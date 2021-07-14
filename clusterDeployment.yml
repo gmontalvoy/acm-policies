@@ -1,0 +1,53 @@
+apiVersion: hive.openshift.io/v1
+kind: ClusterDeployment
+metadata:
+  annotations:
+    open-cluster-management.io/user-group: REDACTED
+    open-cluster-management.io/user-identity: REDACTED
+  creationTimestamp: "2021-07-14T05:02:03Z"
+  finalizers:
+  - hive.openshift.io/deprovision
+  - managedcluster-import-controller.open-cluster-management.io/cleanup
+  generation: 5
+  labels:
+    cloud: AWS
+    cluster.open-cluster-management.io/clusterset: rhpds-shared
+    hive.openshift.io/cluster-platform: aws
+    hive.openshift.io/cluster-region: us-east-2
+    hive.openshift.io/version-major: "4"
+    hive.openshift.io/version-major-minor: "4.7"
+    hive.openshift.io/version-major-minor-patch: 4.7.19
+    region: us-east-2
+    vendor: OpenShift
+  name: testcluster1
+  namespace: testcluster1
+  uid: f08414cd-3874-487b-aae7-016adaa4c38e
+spec:
+  baseDomain: dev.open.redhat.com
+  clusterMetadata:
+    adminKubeconfigSecretRef:
+      name: testcluster1-0-hb56b-admin-kubeconfig
+    adminPasswordSecretRef:
+      name: testcluster1-0-hb56b-admin-password
+    clusterID: 32dd7ac7-df4a-4ea0-97be-REDACTED
+    infraID: testcluster1-REDACTED
+  clusterName: testcluster1
+  controlPlaneConfig:
+    servingCertificates: {}
+  installAttemptsLimit: 1
+  installed: true
+  platform:
+    aws:
+      credentialsSecretRef:
+        name: testcluster1-aws-creds
+      region: us-east-2
+  powerState: Running
+  provisioning:
+    imageSetRef:
+      name: img4.7.19-x86-64-appsub
+    installConfigSecretRef:
+      name: testcluster1-install-config
+    sshPrivateKeySecretRef:
+      name: testcluster1-ssh-private-key
+  pullSecretRef:
+    name: testcluster1-pull-secret
