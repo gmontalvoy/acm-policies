@@ -1,52 +1,57 @@
 apiVersion: policy.open-cluster-management.io/v1
 kind: Policy
 metadata:
-  name: cert-expiration-policy
+  name: gpte-cert-exp-policy
   namespace: acm-policies
   annotations:
-    policy.open-cluster-management.io/standards: 
-    policy.open-cluster-management.io/categories: 
-    policy.open-cluster-management.io/controls: 
+    policy.open-cluster-management.io/standards: null
+    policy.open-cluster-management.io/categories: null
+    policy.open-cluster-management.io/controls: null
 spec:
   remediationAction: inform
   disabled: false
   policy-templates:
-  - objectDefinition:
-      apiVersion: policy.open-cluster-management.io/v1
-      kind: CertificatePolicy # cert management expiration
-      metadata:
-        name: cert-expiration-policy-cert-expiration
-      spec:
-        namespaceSelector:
-          include: ["default"]
-          exclude: ["kube-*"]
-        remediationAction: inform # will be overridden by remediationAction in parent policy
-        severity: low
-        minimumDuration: 300h
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: CertificatePolicy
+        metadata:
+          name: gpte-cert-exp-policy-cert-expiration
+        spec:
+          namespaceSelector:
+            include:
+              - default
+            exclude:
+              - kube-*
+          remediationAction: inform
+          severity: low
+          minimumDuration: 300h
 ---
 apiVersion: policy.open-cluster-management.io/v1
 kind: PlacementBinding
 metadata:
-  name: binding-cert-expiration-policy
+  name: binding-gpte-cert-exp-policy
   namespace: acm-policies
 placementRef:
-  name: placement-cert-expiration-policy
+  name: placement-gpte-cert-exp-policy
   kind: PlacementRule
   apiGroup: apps.open-cluster-management.io
 subjects:
-- name: cert-expiration-policy
-  kind: Policy
-  apiGroup: policy.open-cluster-management.io
+  - name: gpte-cert-exp-policy
+    kind: Policy
+    apiGroup: policy.open-cluster-management.io
 ---
 apiVersion: apps.open-cluster-management.io/v1
 kind: PlacementRule
 metadata:
-  name: placement-cert-expiration-policy
+  name: placement-gpte-cert-exp-policy
   namespace: acm-policies
 spec:
   clusterConditions:
-  - status: "True"
-    type: ManagedClusterConditionAvailable
+    - status: 'True'
+      type: ManagedClusterConditionAvailable
   clusterSelector:
     matchExpressions:
-      - {key: name, operator: In, values: ["cluster-gm"]}
+      - key: prod
+        operator: In
+        values:
+          - 'true'
