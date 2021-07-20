@@ -1,63 +1,65 @@
 apiVersion: policy.open-cluster-management.io/v1
 kind: Policy
 metadata:
-  name: gpte-catalog-registry-policy
-  namespace: acm-policies
   annotations:
-    policy.open-cluster-management.io/standards: 
-    policy.open-cluster-management.io/categories: 
-    policy.open-cluster-management.io/controls: 
+    policy.open-cluster-management.io/categories: ''
+    policy.open-cluster-management.io/controls: ''
+    policy.open-cluster-management.io/standards: ''
+  name: gpte-catalog-source
+  namespace: acm-policies
 spec:
-  remediationAction: inform
   disabled: false
   policy-templates:
-  - objectDefinition:
-      apiVersion: policy.open-cluster-management.io/v1
-      kind: ConfigurationPolicy
-      metadata:
-        name: gpte-catalog-registry-policy
-      spec:
-        remediationAction: inform # will be overridden by remediationAction in parent policy
-        severity: low
-        namespaceSelector:
-          exclude: ["kube-*"]
-          include: ["default"]
-        object-templates:
-          - complianceType: musthave
-            objectDefinition:
-              apiVersion: operators.coreos.com/v1alpha1
-              kind: CatalogSource
-              metadata:
-                name: redhat-gpte-nexus
-                namespace: openshift-marketplace
-              spec:
-                displayName: Red Hat GPTE (Nexus)
-                image: quay.io/gpte-devops-automation/nexus-catalog:v1.0.1
-                sourceType: grpc
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: gpte-catalog-registry-policy
+        spec:
+          namespaceSelector:
+            exclude:
+              - kube-*
+            include:
+              - default
+          object-templates:
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: operators.coreos.com/v1alpha1
+                kind: CatalogSource
+                metadata:
+                  name: redhat-gpte-nexus
+                  namespace: openshift-marketplace
+                spec:
+                  displayName: Red Hat GPTE (Nexus)
+                  image: quay.io/gpte-devops-automation/nexus-catalog:v1.0.1
+                  sourceType: grpc
+          remediationAction: inform
+          severity: low
+  remediationAction: inform
 ---
 apiVersion: policy.open-cluster-management.io/v1
 kind: PlacementBinding
 metadata:
-  name: binding-object-based-policy
+  name: binding-gpte-catalog-source
   namespace: acm-policies
 placementRef:
-  name: placement-object-based-policy
-  kind: PlacementRule
   apiGroup: apps.open-cluster-management.io
+  kind: PlacementRule
+  name: placement-gpte-catalog-source
 subjects:
-- name: object-based-policy
-  kind: Policy
-  apiGroup: policy.open-cluster-management.io
+  - apiGroup: policy.open-cluster-management.io
+    kind: Policy
+    name: gpte-catalog-source
 ---
 apiVersion: apps.open-cluster-management.io/v1
 kind: PlacementRule
 metadata:
-  name: placement-object-based-policy
+  annotations:
+    open-cluster-management.io/user-group: c3lzdGVtOmF1dGhlbnRpY2F0ZWQ6b2F1dGgsc3lzdGVtOmF1dGhlbnRpY2F0ZWQ=
+    open-cluster-management.io/user-identity: YWRtaW4=
+  name: placement-gpte-catalog-source
   namespace: acm-policies
 spec:
   clusterConditions:
-  - status: "True"
-    type: ManagedClusterConditionAvailable
-  clusterSelector:
-    matchExpressions:
-      - {key: name, operator: In, values: ["cluster-gm"]}
+    - status: 'True'
+      type: ManagedClusterConditionAvailable

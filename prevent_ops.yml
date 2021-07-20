@@ -1,7 +1,7 @@
 apiVersion: policy.open-cluster-management.io/v1
 kind: Policy
 metadata:
-  name: gpte-operator-policy
+  name: gpte-exc-op-policy
   namespace: acm-policies
   annotations:
     policy.open-cluster-management.io/standards: null
@@ -15,65 +15,53 @@ spec:
       apiVersion: policy.open-cluster-management.io/v1
       kind: ConfigurationPolicy
       metadata:
-        name: openshift-pipelines-policy
+        name: openshift-exc-subs-policy
       spec:
         remediationAction: inform
         severity: high
         object-templates:
-          - complianceType: musthave
+          - complianceType: mustnothave
             objectDefinition:
               apiVersion: operators.coreos.com/v1alpha1
               kind: Subscription
               metadata:
                 name: openshift-pipelines-operator-rh
                 namespace: openshift-operators
-              spec:
-                channel: stable
-                installPlanApproval: Automatic
-                name: openshift-pipelines-operator-rh
-                source: redhat-operators
-                sourceNamespace: openshift-marketplace
   - objectDefinition:
       apiVersion: policy.open-cluster-management.io/v1
       kind: ConfigurationPolicy
       metadata:
-        name: openshift-gitops-policy
+        name: openshift-exc-csv-policy
       spec:
         remediationAction: inform
         severity: high
         object-templates:
-          - complianceType: musthave
+          - complianceType: mustnothave
             objectDefinition:
               apiVersion: operators.coreos.com/v1alpha1
-              kind: Subscription
+              kind: ClusterServiceVersion
               metadata:
-                name: openshift-gitops-operator
+                name: redhat-openshift-pipelines.v1.4.1
                 namespace: openshift-operators
-              spec:
-                channel: preview
-                installPlanApproval: Automatic
-                name: openshift-gitops-operator
-                source: redhat-operators
-                sourceNamespace: openshift-marketplace
 ---
 apiVersion: policy.open-cluster-management.io/v1
 kind: PlacementBinding
 metadata:
-  name: binding-gpte-operator-policy
+  name: binding-gpte-exc-op-policy
   namespace: acm-policies
 placementRef:
-  name: placement-gpte-operator-policy
+  name: placement-gpte-exc-op-policy
   kind: PlacementRule
   apiGroup: apps.open-cluster-management.io
 subjects:
-  - name: gpte-operator-policy
+  - name: gpte-exc-op-policy
     kind: Policy
     apiGroup: policy.open-cluster-management.io
 ---
 apiVersion: apps.open-cluster-management.io/v1
 kind: PlacementRule
 metadata:
-  name: placement-gpte-operator-policy
+  name: placement-gpte-exc-op-policy
   namespace: acm-policies
 spec:
   clusterConditions:
@@ -81,7 +69,7 @@ spec:
       type: ManagedClusterConditionAvailable
   clusterSelector:
     matchExpressions:
-      - key: prod
+      - key: dev
         operator: In
         values:
           - 'true'
